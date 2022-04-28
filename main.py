@@ -9,9 +9,12 @@ API_TOKEN = os.getenv('API_TOKEN')
 
 
 def stock_price(symbol):
-    url = 'https://finnhub.io/api/v1/quote?symbol=' + symbol + '&token=' + API_TOKEN
-    req = requests.get(url)
-    return req.json()
+    try:
+        url = f'https://finnhub.io/api/v1/quote?symbol={symbol}&token={API_TOKEN}'
+        req = requests.get(url)
+        return req.json()
+    except:
+        print("An exception occurred")
 
 
 def generate_csv(stock):
@@ -34,8 +37,9 @@ if __name__ == '__main__':
     for symbol in symbols:
         r = stock_price(symbol)
         stocks[symbol] = r
+        print(r)
 
-    s = sorted(stocks.items(), key=lambda x: x[1]['dp'])
+    s = sorted(stocks.items(), key=lambda x: abs(x[1]['dp']), reverse=True)
     most_volatile_stock = s[0]
 
     #     Generate CSV
